@@ -15,7 +15,7 @@ from pydub import AudioSegment
 load_dotenv()
 
 # Initialize ElevenLabs client
-client = ElevenLabs(api_key=os.getenv("ELEVENLABS_API_KEY"))
+client = ElevenLabs(api_key=st.secrets["ELEVENLABS_API_KEY"])
 
 def extract_audio(video_path):
     """Extract audio from video using MoviePy"""
