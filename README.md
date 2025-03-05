@@ -128,4 +128,3 @@ Special thanks to the following projects and services that made this app possibl
 ---
 
 Happy translating! 🌍🎥
-```
