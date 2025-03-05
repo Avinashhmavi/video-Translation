@@ -1,5 +1,5 @@
 ```markdown
-# 🎥 AI Video Translator
+## 🎥 AI Video Translator
 
 Welcome to the **AI Video Translator**! This powerful tool allows you to seamlessly translate videos into multiple Indian languages with just a few clicks. Whether you're looking to localize content, make videos accessible to a broader audience, or simply experiment with AI-powered translation, this app has got you covered.
 
@@ -62,7 +62,7 @@ Before running the app locally, ensure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/video-translation-app.git
+   git@github.com:Avinashhmavi/video-Translation.git
    cd video-translation-app
    ```
 
@@ -113,7 +113,7 @@ Before running the app locally, ensure you have the following installed:
 For any questions, feedback, or collaboration opportunities, feel free to reach out:
 
 - Email: avi.hm24@gmail.com
-- LinkedIn: [Your LinkedIn Profile]((https://www.linkedin.com/in/avinashhm/))
+- LinkedIn: [Your LinkedIn Profile](https://www.linkedin.com/in/avinashhm/)
 
 ---
 
