@@ -25,8 +25,7 @@ def extract_audio(video_path):
     return audio_path
 
 def transcribe_audio(audio_path):
-    """Transcribe audio using Whisper"""
-    model = whisper.load_model("medium")
+    model = whisper.load_model("medium") 
     result = model.transcribe(audio_path, word_timestamps=True)
     return result['segments']
 
