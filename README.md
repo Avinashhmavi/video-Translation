@@ -1,11 +1,11 @@
 ```markdown
 
-## 🎥 AI Video Translator
+ 🎥 AI Video Translator
 
 Welcome to the **AI Video Translator**! This powerful tool allows you to seamlessly translate videos into multiple Indian languages with just a few clicks. Whether you're looking to localize content, make videos accessible to a broader audience, or simply experiment with AI-powered translation, this app has got you covered.
 
 
-## 🌟 Features
+ 🌟 Features
 
 - **Multi-language Support**: Translate videos into popular Indian languages, including:
   - Hindi (हिंदी)
