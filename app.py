@@ -1,4 +1,3 @@
-# app.py
 import os
 import tempfile
 import subprocess
@@ -15,17 +14,21 @@ from pydub import AudioSegment
 load_dotenv()
 
 # Initialize ElevenLabs client
-client = ElevenLabs(api_key=st.secrets["ELEVENLABS_API_KEY"])
+try:
+    client = ElevenLabs(api_key=st.secrets["ELEVENLABS_API_KEY"])
+except KeyError:
+    st.error("Missing API key in Streamlit secrets!")
 
 def extract_audio(video_path):
     """Extract audio from video using MoviePy"""
     video = VideoFileClip(video_path)
     audio_path = "temp_audio.wav"
-    video.audio.write_audiofile(audio_path)
+    video.audio.write_audiofile(audio_path, codec='pcm_s16le')
     return audio_path
 
 def transcribe_audio(audio_path):
-    model = whisper.load_model("medium") 
+    """Transcribe audio using Whisper AI"""
+    model = whisper.load_model("medium")
     result = model.transcribe(audio_path, word_timestamps=True)
     return result['segments']
 
@@ -46,29 +49,34 @@ def generate_voice(segments, output_path, voice_id):
     full_audio = AudioSegment.empty()
     
     for seg in segments:
-        audio = client.generate(
-            text=seg['text'],
-            voice=voice_id,
-            model="eleven_multilingual_v2",
-            output_format="mp3_44100_128"
-        )
-        
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as f:
-            temp_path = f.name
-            save(audio, temp_path)
-        
-        audio_segment = AudioSegment.from_mp3(temp_path)
-        os.remove(temp_path)
-        
-        target_duration = (seg['end'] - seg['start']) * 1000  # ms
-        if len(audio_segment) > target_duration:
-            audio_segment = audio_segment[:target_duration]
-        else:
-            silence = AudioSegment.silent(target_duration - len(audio_segment))
-            audio_segment += silence
-        
-        full_audio += audio_segment
-    
+        try:
+            audio = client.generate(
+                text=seg['text'],
+                voice=voice_id,
+                model="eleven_multilingual_v2",
+                output_format="mp3_44100_128"
+            )
+            
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as f:
+                temp_path = f.name
+                save(audio, filename=temp_path)
+
+            audio_segment = AudioSegment.from_mp3(temp_path)
+            os.remove(temp_path)
+
+            target_duration = (seg['end'] - seg['start']) * 1000  # Convert seconds to ms
+            if len(audio_segment) > target_duration:
+                audio_segment = audio_segment[:target_duration]
+            else:
+                silence = AudioSegment.silent(duration=target_duration - len(audio_segment))
+                audio_segment += silence
+
+            full_audio += audio_segment
+
+        except Exception as e:
+            st.error(f"Error generating voice: {e}")
+            return None
+
     full_audio.export(output_path, format="wav")
     return output_path
 
@@ -117,8 +125,12 @@ def main():
     video_file = st.file_uploader("Upload video", type=["mp4", "mov"])
     
     # Get available voices
-    voices = client.voices.get_all().voices
-    voice_options = {v.name: v.voice_id for v in voices}
+    try:
+        voices = client.voices().voices
+        voice_options = {v.name: v.voice_id for v in voices}
+    except Exception as e:
+        st.error(f"Failed to fetch voices: {e}")
+        return
     
     # UI elements
     target_lang = st.selectbox("Target Language", list(indian_langs.keys()))
@@ -126,12 +138,11 @@ def main():
     
     if video_file and st.button("Translate Video"):
         with st.spinner("Processing..."):
-            # Initialize paths
             video_path = audio_path = translated_audio = output_path = None
             
             try:
                 # Save uploaded video
-                with tempfile.NamedTemporaryFile(delete=False) as f:
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as f:
                     video_path = f.name
                     f.write(video_file.read())
                 
